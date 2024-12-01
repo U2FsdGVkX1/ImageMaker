@@ -3,6 +3,7 @@
 set -ex
 
 [ "$(id -u)" -ne 0 ] && echo "This script must be run as root" && exit 1
+command -v genfstab >/dev/null 2>&1 || { echo >&2 "genfstab command not found, exiting."; exit 2; }
 
 chroot_rootfs() {
 	mount --bind /etc/resolv.conf $rootfs/etc/resolv.conf
@@ -61,7 +62,6 @@ download_sources() {
 		return
 	fi
 
-	pushd $tmp
 	while read -r line; do
 		filename=$(basename $line)
 		wget -O $filename $line
@@ -70,7 +70,6 @@ download_sources() {
 			rm -rf $filename
 		fi
         done < $sourcespath
-	popd
 }
 
 finalize() {
@@ -78,19 +77,17 @@ finalize() {
 	if [ -f $postshpath ]; then
 		source $postshpath
 	fi
+	genfstab -U $rootfs > $rootfs/etc/fstab
 	chroot_rootfs dracut -f --regenerate-all
 	chroot_rootfs dnf clean all
 }
 
 generate_image() {
-	./genimage --inputpath $tmp --rootpath $tmp --config $boardpath/genimage.cfg
-	local imagepath=$PWD/images/sdcard.img
+	./genimage-bin --inputpath $tmp --rootpath $tmp --config $boardpath/genimage.cfg
 }
 
 arch="riscv64"
 repourl="http://openkoji.iscas.ac.cn/kojifiles/repos/f41-build-side-1/latest/riscv64"
-tmp=$(mktemp -d)
-rootfs="$tmp/rootfs"
 board=
 boardpath=
 while getopts "b:" opt; do
@@ -103,14 +100,27 @@ while getopts "b:" opt; do
 done
 shift $((OPTIND - 1))
 
-mkdir -p $tmp/boot && mkdir -p $rootfs/boot
-mount --bind $tmp/boot $rootfs/boot
+tmp=$(mktemp -d -p $PWD)
+partitions=(
+	"rootfs,/rootfs,16G,mkfs.ext4"
+	"boot,/rootfs/boot,500M,mkfs.ext4"
+	"efi,/rootfs/boot/efi,100M,mkfs.vfat"
+)
+pushd $tmp
+for partition in "${partitions[@]}"; do
+	IFS="," read -r name mountpoint size cmd <<< $partition
+	mountpoint=$tmp$mountpoint
+	eval "$name=$mountpoint"
+
+	fallocate -l $size $name.img && $cmd $name.img
+	mkdir -p $mountpoint && mount $name.img $mountpoint
+done
 prepare_rootfs "@core glibc-all-langpacks"
 prepare_repos
 install_pkgs
 download_sources
 finalize
+popd
 
-umount $rootfs/boot
+grep $tmp /proc/mounts | cut -d' ' -f2 | sort -r | xargs umount
 generate_image
-rm -rf $tmp
