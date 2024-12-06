@@ -10,7 +10,7 @@ chroot_rootfs() {
 	mount -t proc none $rootfs/proc
 	mount -t sysfs none $rootfs/sys
 	mount -t devtmpfs none $rootfs/dev
-	chroot $rootfs "$@"
+	chroot $rootfs bash -c "$*"
 	umount $rootfs/dev $rootfs/sys $rootfs/proc $rootfs/etc/resolv.conf
 }
 
@@ -24,10 +24,10 @@ prepare_rootfs() {
 
 prepare_repos() {
 	rm -f $rootfs/etc/yum.repos.d/*.repo
-	chroot_rootfs dnf config-manager addrepo \
-		--id="fedora-riscv" \
-		--set=name="Fedora RISC-V" \
-		--set=baseurl="$repourl"
+	chroot_rootfs "dnf config-manager addrepo \
+		--id='fedora-riscv' \
+		--set=name='Fedora RISC-V' \
+		--set=baseurl=$repourl"
 
 	local repospath=$boardpath/repos
 	if [ ! -d $repospath ]; then
@@ -66,7 +66,7 @@ download_sources() {
 		filename=$(basename $line)
 		wget -O $filename $line
 		if [[ "$filename" =~ \.tar(\.xz|\.gz)?$ ]]; then
-			tar xf $filename -C $rootfs
+			tar xf $filename -C $rootfs --no-same-owner
 			rm -rf $filename
 		fi
         done < $sourcespath
@@ -77,8 +77,15 @@ finalize() {
 	if [ -f $postshpath ]; then
 		source $postshpath
 	fi
+	
 	genfstab -U $rootfs > $rootfs/etc/fstab
-	chroot_rootfs dracut -f --regenerate-all
+	perl -i -pe 's/iocharset=.+?,//' $rootfs/etc/fstab
+
+	rm -rf $rootfs/etc/grub.d/30_os-prober
+	chroot_rootfs kernel-install add-all
+	chroot_rootfs grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+
+	chroot_rootfs "echo 'root:riscv' | chpasswd"
 	chroot_rootfs dnf clean all
 }
 
@@ -117,12 +124,12 @@ for partition in "${partitions[@]}"; do
 	mkdir -p $mountpoint && mount $name.img $mountpoint
 done
 # prepare_rootfs "@core @gnome-desktop glibc-all-langpacks"
-prepare_rootfs "@core glibc-all-langpacks"
+prepare_rootfs "@core glibc-all-langpacks grub2-efi-riscv64"
 prepare_repos
 install_pkgs
 download_sources
 finalize
 popd
 
-grep $tmp /proc/mounts | cut -d' ' -f2 | sort -r | xargs umount
+grep $tmp /proc/mounts | cut -d" " -f2 | sort -r | xargs umount
 generate_image
