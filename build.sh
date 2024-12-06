@@ -129,7 +129,7 @@ for partition in "${partitions[@]}"; do
 	fallocate -l $size $name.img && $cmd $name.img
 	mkdir -p $mountpoint && mount $name.img $mountpoint
 done
-prepare_rootfs "@core @gnome-desktop glibc-all-langpacks grub2-efi-riscv64"
+prepare_rootfs "@core @gnome-desktop glibc-all-langpacks grub2-efi-riscv64 linux-firmware"
 prepare_repos
 install_pkgs
 download_sources
