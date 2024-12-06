@@ -78,13 +78,20 @@ finalize() {
 		source $postshpath
 	fi
 	
+	# fstab
 	genfstab -U $rootfs > $rootfs/etc/fstab
 	perl -i -pe 's/iocharset=.+?,//' $rootfs/etc/fstab
 
+	# gnome-initial
+	mkdir -p $rootfs/etc/gnome-initial-setup
+	touch $rootfs/etc/gnome-initial-setup/vendor.conf
+
+	# grub
 	rm -rf $rootfs/etc/grub.d/30_os-prober
 	chroot_rootfs kernel-install add-all
 	chroot_rootfs grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 
+	# others
 	chroot_rootfs "echo 'root:riscv' | chpasswd"
 	chroot_rootfs dnf clean all
 }
@@ -107,8 +114,7 @@ while getopts "b:" opt; do
 done
 shift $((OPTIND - 1))
 
-# tmp=$(mktemp -d -p $PWD)
-tmp=$PWD/test
+tmp=$(mktemp -d -p $PWD)
 partitions=(
 	"rootfs,/rootfs,16G,mkfs.ext4"
 	"boot,/rootfs/boot,500M,mkfs.ext4"
@@ -123,8 +129,7 @@ for partition in "${partitions[@]}"; do
 	fallocate -l $size $name.img && $cmd $name.img
 	mkdir -p $mountpoint && mount $name.img $mountpoint
 done
-# prepare_rootfs "@core @gnome-desktop glibc-all-langpacks"
-prepare_rootfs "@core glibc-all-langpacks grub2-efi-riscv64"
+prepare_rootfs "@core @gnome-desktop glibc-all-langpacks grub2-efi-riscv64"
 prepare_repos
 install_pkgs
 download_sources

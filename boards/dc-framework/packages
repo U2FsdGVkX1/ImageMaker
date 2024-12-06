@@ -14,3 +14,7 @@ omx-il
 ffmpeg-free
 vlc
 firefox
+
+# wifi
+iwlwifi-dvm-firmware
+iwlwifi-mvm-firmware
