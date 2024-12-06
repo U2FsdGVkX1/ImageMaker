@@ -73,7 +73,7 @@ download_sources() {
 }
 
 finalize() {
-	local postshpath=$boardpath/post.sh
+	local postshpath=$boardpath/post
 	if [ -f $postshpath ]; then
 		source $postshpath
 	fi
@@ -100,7 +100,8 @@ while getopts "b:" opt; do
 done
 shift $((OPTIND - 1))
 
-tmp=$(mktemp -d -p $PWD)
+# tmp=$(mktemp -d -p $PWD)
+tmp=$PWD/test
 partitions=(
 	"rootfs,/rootfs,16G,mkfs.ext4"
 	"boot,/rootfs/boot,500M,mkfs.ext4"
@@ -115,6 +116,7 @@ for partition in "${partitions[@]}"; do
 	fallocate -l $size $name.img && $cmd $name.img
 	mkdir -p $mountpoint && mount $name.img $mountpoint
 done
+# prepare_rootfs "@core @gnome-desktop glibc-all-langpacks"
 prepare_rootfs "@core glibc-all-langpacks"
 prepare_repos
 install_pkgs
