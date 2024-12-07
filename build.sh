@@ -34,7 +34,7 @@ prepare_repos() {
 		return
 	fi
 
-	cp $repospath/*.repo $rootfs/etc/yum.repos.d
+	cp -v $repospath/*.repo $rootfs/etc/yum.repos.d
 }
 
 install_pkgs() {
@@ -54,6 +54,15 @@ install_pkgs() {
 		pkgs+="$line "
 	done < $pkgspath
 	chroot_rootfs dnf install -y $pkgs
+}
+
+overlay_rootfs() {
+	local overlaypath=$boardpath/overlay
+	if [ ! -d $overlaypath ]; then
+		return
+	fi
+
+	cp -rfv $overlaypath/* $rootfs
 }
 
 download_sources() {
@@ -132,6 +141,7 @@ done
 prepare_rootfs "@core @gnome-desktop glibc-all-langpacks grub2-efi-riscv64 linux-firmware"
 prepare_repos
 install_pkgs
+overlay_rootfs
 download_sources
 finalize
 popd

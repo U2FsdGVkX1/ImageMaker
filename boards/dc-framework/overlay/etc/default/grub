@@ -1,0 +1,2 @@
+GRUB_CMDLINE_LINUX="rootwait earlycon loglevel=7 selinux=0"
+GRUB_DEVICETREE=starfive/jh7110-starfive-visionfive-2-framework.dtb
