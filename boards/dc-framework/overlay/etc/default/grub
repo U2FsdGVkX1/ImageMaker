@@ -1,4 +1,0 @@
-GRUB_CMDLINE_LINUX="rootwait earlycon splash plymouth.ignore-serial-consoles selinux=0"
-GRUB_DEVICETREE=starfive/jh7110-starfive-visionfive-2-framework.dtb
-GRUB_THEME=/boot/grub2/themes/fedoravforce/theme.txt
-GRUB_TIMEOUT=1

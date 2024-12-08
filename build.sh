@@ -81,6 +81,23 @@ overlay_rootfs() {
 	cp -rfv $overlaypath/* $rootfs
 }
 
+install_bootloader() {
+	# theme
+	wget -O theme.tar.gz http://openkoji.iscas.ac.cn/pub/dist-repos/dl/grubtheme.tar.gz
+	tar xf theme.tar.gz -C $rootfs --no-same-owner
+	rm -rf theme.tar.gz
+
+	# config
+	echo 'GRUB_CMDLINE_LINUX="rootwait splash plymouth.ignore-serial-consoles selinux=0"' >> $rootfs/etc/default/grub
+	echo 'GRUB_THEME=/boot/grub2/themes/fedoravforce/theme.txt' >> $rootfs/etc/default/grub
+	echo 'GRUB_TIMEOUT=3' >> $rootfs/etc/default/grub
+
+	# install
+	rm -rf $rootfs/etc/grub.d/30_os-prober
+	chroot_rootfs kernel-install add-all
+	chroot_rootfs grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+}
+
 finalize() {
 	local postshpath=$boardpath/post
 	if [ -f $postshpath ]; then
@@ -94,11 +111,6 @@ finalize() {
 	# gnome-initial
 	mkdir -p $rootfs/etc/gnome-initial-setup
 	touch $rootfs/etc/gnome-initial-setup/vendor.conf
-
-	# grub
-	rm -rf $rootfs/etc/grub.d/30_os-prober
-	chroot_rootfs kernel-install add-all
-	chroot_rootfs grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 
 	# others
 	chroot_rootfs "echo 'root:riscv' | chpasswd"
@@ -143,6 +155,7 @@ prepare_repos
 install_pkgs
 download_sources
 overlay_rootfs
+install_bootloader
 finalize
 popd
 
