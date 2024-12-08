@@ -106,7 +106,7 @@ finalize() {
 }
 
 generate_image() {
-	./genimage-bin --inputpath $tmp --rootpath $tmp --config $boardpath/genimage.cfg
+	./genimage-bin --inputpath $tmp --outputpath $PWD --rootpath $tmp --config $boardpath/genimage.cfg
 }
 
 arch="riscv64"

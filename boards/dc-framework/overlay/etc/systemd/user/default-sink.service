@@ -1,0 +1,9 @@
+[Unit]
+Description=set default sink
+After=graphical.target
+
+[Service]
+ExecStart=/etc/systemd/user/default-sink.sh
+
+[Install]
+WantedBy=pipewire.service
