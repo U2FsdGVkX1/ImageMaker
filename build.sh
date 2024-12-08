@@ -56,15 +56,6 @@ install_pkgs() {
 	chroot_rootfs dnf install -y $pkgs
 }
 
-overlay_rootfs() {
-	local overlaypath=$boardpath/overlay
-	if [ ! -d $overlaypath ]; then
-		return
-	fi
-
-	cp -rfv $overlaypath/* $rootfs
-}
-
 download_sources() {
 	local sourcespath=$boardpath/sources
 	if [ ! -f $sourcespath ]; then
@@ -79,6 +70,15 @@ download_sources() {
 			rm -rf $filename
 		fi
         done < $sourcespath
+}
+
+overlay_rootfs() {
+	local overlaypath=$boardpath/overlay
+	if [ ! -d $overlaypath ]; then
+		return
+	fi
+
+	cp -rfv $overlaypath/* $rootfs
 }
 
 finalize() {
@@ -141,8 +141,8 @@ done
 prepare_rootfs "@workstation-product @gnome-desktop @hardware-support grub2-efi-riscv64"
 prepare_repos
 install_pkgs
-overlay_rootfs
 download_sources
+overlay_rootfs
 finalize
 popd
 
