@@ -1,0 +1,2 @@
+# K1 not support
+chroot_rootfs systemctl mask sleep.target suspend.target hibernate.target

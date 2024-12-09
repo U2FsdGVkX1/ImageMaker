@@ -1,0 +1,3 @@
+cat << EOF >> /etc/gdm/custom.conf
+WaylandEnable=true
+EOF

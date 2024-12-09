@@ -1,0 +1,1 @@
+mv esos.elf $rootfs/lib/firmware

@@ -1,0 +1,6 @@
+[fedora-riscv-spacemit-k1]
+name=Fedora RISC-V SpacemiT K1
+baseurl=https://openkoji.iscas.ac.cn/pub/dist-repos/dl/SpacemiT/K1_M1/repos/
+enabled=1
+priority=1
+gpgcheck=0
