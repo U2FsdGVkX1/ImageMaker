@@ -14,6 +14,18 @@ chroot_rootfs() {
 	umount $rootfs/dev $rootfs/sys $rootfs/proc $rootfs/etc/resolv.conf
 }
 
+prepare_boardconfig() {
+	local configpath=$shellpath/boards/$1
+	local inheritpath=$configpath/inherit
+	if [ -f $inheritpath ]; then
+		prepare_boardconfig $(cat $inheritpath)
+	fi
+
+	boardpath=$tmp/config
+	mkdir -p $boardpath
+	cp -rf $configpath/* $boardpath
+}
+
 prepare_partitions() {
 	local partitions=(
 		"rootfs,/rootfs,16G,mkfs.ext4"
@@ -159,22 +171,22 @@ generate_image() {
 	./genimage-bin --inputpath $tmp --outputpath $PWD --rootpath $tmp --config $boardpath/genimage.cfg
 }
 
-tmp=$(mktemp -d -p $PWD)
+shellpath=$PWD
 arch="riscv64"
 repourl="http://openkoji.iscas.ac.cn/kojifiles/repos/f41-build-side-1/latest/riscv64"
 board=
-boardpath=
 while getopts "b:" opt; do
 	case $opt in
 	b)
 		board=$OPTARG
-		boardpath=$PWD/boards/$board
 		;;
 	esac
 done
 shift $((OPTIND - 1))
 
+tmp=$(mktemp -d -p $PWD)
 pushd $tmp
+prepare_boardconfig $board
 prepare_partitions
 prepare_rootfs "@workstation-product @gnome-desktop @hardware-support grub2-efi-riscv64"
 prepare_repos
