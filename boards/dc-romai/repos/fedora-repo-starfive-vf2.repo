@@ -1,6 +1,0 @@
-[fedora-riscv-starfive-vf2]
-name=Fedora RISC-V StarFive VF2
-baseurl=https://mirror.iscas.ac.cn/fedora-riscv/dl/StarFive/visionfive2/repos/
-enabled=1
-priority=1
-gpgcheck=0

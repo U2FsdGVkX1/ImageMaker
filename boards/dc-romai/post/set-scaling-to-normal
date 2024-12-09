@@ -1,0 +1,2 @@
+sed -i '/<key name="scaling-factor" type="u">/,/<\/key>/s/<default>0<\/default>/<default>1<\/default>/' $rootfs/usr/share/glib-2.0/schemas/org.gnome.desktop.interface.gschema.xml
+chroot_rootfs glib-compile-schemas /usr/share/glib-2.0/schemas/

@@ -129,7 +129,9 @@ install_bootloader() {
 finalize() {
 	local postpath=$boardpath/post
 	if [ -d $postpath ]; then
-		source $postpath/*
+		for script in $postpath/*; do
+			source $script
+		done
 	fi
 	
 	# fstab

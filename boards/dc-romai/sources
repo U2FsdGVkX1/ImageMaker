@@ -1,4 +1,4 @@
-http://openkoji.iscas.ac.cn/pub/dist-repos/dl/DeepComputing/ROMA-I/kernel-cross/image-bin-patch.tar
-http://openkoji.iscas.ac.cn/pub/dist-repos/dl/DeepComputing/ROMA-I/fw/drivers.tar
+http://openkoji.iscas.ac.cn/pub/dist-repos/dl/DeepComputing/ROMA-I/kernel-cross/5.15.0.tar.gz
+http://openkoji.iscas.ac.cn/pub/dist-repos/dl/DeepComputing/ROMA-I/fw/firmware.tar.gz
 http://openkoji.iscas.ac.cn/pub/dist-repos/dl/StarFive/visionfive2/fw/spl.img
 http://openkoji.iscas.ac.cn/pub/dist-repos/dl/StarFive/visionfive2/fw/uboot.img
