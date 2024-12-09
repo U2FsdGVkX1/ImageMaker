@@ -116,7 +116,7 @@ install_bootloader() {
 	rm -rf theme.tar.gz
 
 	# config
-	echo 'GRUB_CMDLINE_LINUX="rootwait splash plymouth.ignore-serial-consoles selinux=0"' >> $rootfs/etc/default/grub
+	echo 'GRUB_CMDLINE_LINUX="rootwait clk_ignore_unused splash plymouth.ignore-serial-consoles selinux=0"' >> $rootfs/etc/default/grub
 	echo 'GRUB_THEME=/boot/grub2/themes/fedoravforce/theme.txt' >> $rootfs/etc/default/grub
 	echo 'GRUB_TIMEOUT=3' >> $rootfs/etc/default/grub
 
