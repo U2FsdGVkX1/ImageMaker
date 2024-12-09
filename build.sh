@@ -99,14 +99,15 @@ install_bootloader() {
 }
 
 finalize() {
-	local postshpath=$boardpath/post
-	if [ -f $postshpath ]; then
-		source $postshpath
+	local postpath=$boardpath/post
+	if [ -d $postpath ]; then
+		source $postpath/*
 	fi
 	
 	# fstab
 	genfstab -U $rootfs > $rootfs/etc/fstab
 	perl -i -pe 's/iocharset=.+?,//' $rootfs/etc/fstab
+	perl -i -ne 'print unless /zram/' $rootfs/etc/fstab
 
 	# gnome-initial
 	mkdir -p $rootfs/etc/gnome-initial-setup

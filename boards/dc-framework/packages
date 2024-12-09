@@ -1,16 +1,1 @@
-# gpu
-llvm16-libs
-clang16-libs
-img-gpu-ddk
-mesa-dri-drivers-22.3.6-1.fc41
-
-# hardware acceleration
-wave511-vdec
-wave420l-venc
-codaj12-jdec
-omx-il
-
-# apps
-ffmpeg-free
-vlc
-firefox
+../startfive-visionfive2/packages

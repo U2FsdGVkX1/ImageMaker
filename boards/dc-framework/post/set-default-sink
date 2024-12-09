@@ -1,7 +1,3 @@
-# JH7110 not support
-chroot_rootfs systemctl mask sleep.target suspend.target hibernate.target
-chroot_rootfs dnf remove -y totem
-
 # set ES8326 to default sink
 chmod +x $rootfs/etc/systemd/user/default-sink.sh
 chroot_rootfs systemctl --global enable default-sink
