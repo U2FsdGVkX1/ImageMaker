@@ -1,1 +1,3 @@
 genimage-bin
+tmp.*
+sdcard.img*
