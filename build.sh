@@ -110,6 +110,14 @@ overlay_rootfs() {
 }
 
 install_bootloader() {
+	# pre
+	local prepath=$boardpath/pre
+	if [ -d $prepath ]; then
+		for script in $prepath/*; do
+			source $script
+		done
+	fi
+
 	# theme
 	wget -O theme.tar.gz http://openkoji.iscas.ac.cn/pub/dist-repos/dl/grubtheme.tar.gz
 	tar xf theme.tar.gz -C $rootfs --no-same-owner
@@ -127,13 +135,6 @@ install_bootloader() {
 }
 
 finalize() {
-	local postpath=$boardpath/post
-	if [ -d $postpath ]; then
-		for script in $postpath/*; do
-			source $script
-		done
-	fi
-	
 	# fstab
 	genfstab -U $rootfs > $rootfs/etc/fstab
 	perl -i -pe 's/iocharset=.+?,//' $rootfs/etc/fstab
@@ -167,6 +168,14 @@ EOF
 	# others
 	chroot_rootfs "echo 'root:riscv' | chpasswd"
 	chroot_rootfs dnf clean all
+
+	# post
+	local postpath=$boardpath/post
+	if [ -d $postpath ]; then
+		for script in $postpath/*; do
+			source $script
+		done
+	fi
 }
 
 generate_image() {

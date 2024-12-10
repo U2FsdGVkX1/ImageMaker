@@ -3,8 +3,4 @@ fdt_addr_r=0x31000000
 detect_dtb=setenv fdtfile ${product_name}.dtb
 dlist=mmc nvme
 dtb_dir=spacemit
-bootcmd=usb start;
-for bdev in ${dlist};
-do run dtb_env;
-run loaddtb;
-load ${bootfs_devname} ${boot_devnum}:${bootfs_part} ${kernel_addr_r} /EFI/fedora/grubriscv64.efi;setenv stdin usbkbd;bootefi ${kernel_addr_r} ${dtb_addr};done;
+bootcmd=usb start;for bdev in ${dlist};do run dtb_env;run loaddtb;load ${bootfs_devname} ${boot_devnum}:5 ${kernel_addr_r} /EFI/fedora/grubriscv64.efi;setenv stdin usbkbd;bootefi ${kernel_addr_r} ${dtb_addr};done;
