@@ -2,8 +2,9 @@
 
 set -ex
 
-[ "$(id -u)" -ne 0 ] && echo "This script must be run as root" && exit 1
-command -v genfstab >/dev/null 2>&1 || { echo >&2 "genfstab command not found, exiting."; exit 2; }
+[ "$(id -u)" -ne 0 ] && echo "This script must be run as root." && exit 1
+[ ! -f genimage-bin ] && echo "genimage-bin file not found, please obtain it by getgenimage.sh." && exit 2
+command -v genfstab >/dev/null 2>&1 || { echo >&2 "genfstab command not found, exiting."; exit 3; }
 
 chroot_rootfs() {
 	mount --bind /etc/resolv.conf $rootfs/etc/resolv.conf
