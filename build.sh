@@ -181,6 +181,7 @@ EOF
 }
 
 generate_image() {
+	grep $tmp /proc/mounts | cut -d" " -f2 | sort -r | xargs umount
 	./genimage-bin --inputpath $tmp --outputpath $PWD --rootpath $tmp --config $boardpath/genimage.cfg
 }
 
@@ -209,6 +210,4 @@ overlay_rootfs
 install_bootloader
 finalize
 popd
-
-grep $tmp /proc/mounts | cut -d" " -f2 | sort -r | xargs umount
 generate_image
