@@ -120,20 +120,26 @@ install_bootloader() {
 		done
 	fi
 
-	# theme
-	wget -O theme.tar.gz http://openkoji.iscas.ac.cn/pub/dist-repos/dl/grubtheme.tar.gz
-	tar xf theme.tar.gz -C $rootfs --no-same-owner
-	rm -rf theme.tar.gz
+	if [ $loader = 'grub2' ]; then
+		# theme
+		wget -O theme.tar.gz http://openkoji.iscas.ac.cn/pub/dist-repos/dl/grubtheme.tar.gz
+		tar xf theme.tar.gz -C $rootfs --no-same-owner
+		rm -rf theme.tar.gz
 
-	# config
-	echo 'GRUB_CMDLINE_LINUX="rootwait clk_ignore_unused splash plymouth.ignore-serial-consoles selinux=0"' >> $rootfs/etc/default/grub
-	echo 'GRUB_THEME=/boot/grub2/themes/fedoravforce/theme.txt' >> $rootfs/etc/default/grub
-	echo 'GRUB_TIMEOUT=3' >> $rootfs/etc/default/grub
+		# config
+		echo 'GRUB_CMDLINE_LINUX="rootwait clk_ignore_unused splash plymouth.ignore-serial-consoles selinux=0"' >> $rootfs/etc/default/grub
+		echo 'GRUB_THEME=/boot/grub2/themes/fedoravforce/theme.txt' >> $rootfs/etc/default/grub
+		echo 'GRUB_TIMEOUT=3' >> $rootfs/etc/default/grub
 
-	# install
-	rm -rf $rootfs/etc/grub.d/30_os-prober
-	chroot_rootfs kernel-install add-all
-	chroot_rootfs grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+		# install
+		rm -rf $rootfs/etc/grub.d/30_os-prober
+		chroot_rootfs kernel-install add-all
+		chroot_rootfs grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+	else
+		# install
+		chroot_rootfs kernel-install add-all
+		chroot_rootfs bootctl install
+	fi
 }
 
 finalize() {
@@ -220,7 +226,7 @@ tmp=$(mktemp -d -p $PWD)
 pushd $tmp
 prepare_boardconfig $board
 prepare_partitions
-prepare_rootfs $rootfspkgs
+prepare_rootfs "$rootfspkgs"
 prepare_repos
 install_pkgs
 download_sources
