@@ -213,7 +213,9 @@ done
 shift $((OPTIND - 1))
 
 rootfspkgs="@hardware-support"
-if [ "$desktop" = "gnome" ]; then
+if [ "$desktop" = "core" ]; then
+	rootfspkgs+=" @core glibc-all-langpacks"
+elif [ "$desktop" = "gnome" ]; then
 	rootfspkgs+=" @workstation-product @gnome-desktop"
 fi
 if [ "$loader" = "grub2" ]; then
