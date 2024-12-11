@@ -45,11 +45,11 @@ prepare_partitions() {
 }
 
 prepare_rootfs() {
-	local packages=$1
+	local pkgs=$1
 	dnf5 --forcearch=$arch \
 	     --disablerepo "*" --repofrompath=base,"$repourl" \
 	     --installroot=$rootfs \
-	     install -y $packages
+	     install -y $pkgs
 }
 
 prepare_repos() {
@@ -188,9 +188,17 @@ generate_image() {
 shellpath=$PWD
 arch="riscv64"
 repourl="http://openkoji.iscas.ac.cn/kojifiles/repos/f41-build-side-1/latest/riscv64"
+loader=grub2
+desktop=gnome
 board=
-while getopts "b:" opt; do
+while getopts "l:d:b:" opt; do
 	case $opt in
+	l)
+		loader=$OPTARG
+		;;
+	d)
+		desktop=$OPTARG
+		;;
 	b)
 		board=$OPTARG
 		;;
@@ -198,16 +206,26 @@ while getopts "b:" opt; do
 done
 shift $((OPTIND - 1))
 
+rootfspkgs="@hardware-support"
+if [ "$desktop" = "gnome" ]; then
+	rootfspkgs+=" @workstation-product @gnome-desktop"
+fi
+if [ "$loader" = "grub2" ]; then
+	rootfspkgs+=" grub2-efi-riscv64"
+elif [ "$loader" = "systemd" ]; then
+	rootfspkgs+=" systemd-boot-unsigned"
+fi
+
 tmp=$(mktemp -d -p $PWD)
 pushd $tmp
 prepare_boardconfig $board
 prepare_partitions
-prepare_rootfs "@workstation-product @gnome-desktop @hardware-support grub2-efi-riscv64"
+prepare_rootfs $rootfspkgs
 prepare_repos
 install_pkgs
 download_sources
 overlay_rootfs
 install_bootloader
 finalize
-popd
 generate_image
+popd
