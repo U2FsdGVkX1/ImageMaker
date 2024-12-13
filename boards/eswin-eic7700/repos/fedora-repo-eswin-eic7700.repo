@@ -1,0 +1,6 @@
+[fedora-riscv-eswin-eic7700]
+name=Fedora RISC-V ESWIN EIC7700
+baseurl=http://openkoji.iscas.ac.cn/pub/dist-repos/dl/ESWIN/EIC7700/repos/
+enabled=1
+priority=1
+gpgcheck=0

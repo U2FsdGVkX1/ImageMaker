@@ -1,0 +1,2 @@
+# ESWin EIC7700 not support
+chroot_rootfs systemctl mask sleep.target suspend.target hibernate.target
