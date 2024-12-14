@@ -20,12 +20,20 @@ prepare_boardconfig() {
 	local configpath=$shellpath/boards/$1
 	local inheritpath=$configpath/inherit
 	if [ -f $inheritpath ]; then
-		prepare_boardconfig $(cat $inheritpath)
+		prepare_boardconfig $(cat $inheritpath) $tag
 	fi
 
 	boardpath=$tmp/config
 	mkdir -p $boardpath
-	cp -rf $configpath/* $boardpath
+	cp -rfv $configpath/* $boardpath
+
+	local tagpath=$configpath/tags/$tag
+	if [ -n "$tag" ] && [ -d $tagpath ]; then
+		find $tagpath -mindepth 1 -maxdepth 1 -printf "%f\n" | while read -r name; do
+			rm -rfv $boardpath/$name
+		done
+		cp -rfv $tagpath/* $boardpath
+	fi
 }
 
 prepare_partitions() {
@@ -200,14 +208,18 @@ arch="riscv64"
 repourl="http://openkoji.iscas.ac.cn/kojifiles/repos/f41-build-side-1/latest/riscv64"
 loader=grub2
 desktop=gnome
+tag=
 board=
-while getopts "l:d:b:" opt; do
+while getopts "l:d:t:b:" opt; do
 	case $opt in
 	l)
 		loader=$OPTARG
 		;;
 	d)
 		desktop=$OPTARG
+		;;
+	t)
+		tag=$OPTARG
 		;;
 	b)
 		board=$OPTARG
