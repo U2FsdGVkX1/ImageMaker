@@ -39,7 +39,7 @@ prepare_boardconfig() {
 prepare_partitions() {
 	local partitions=(
 		"rootfs,/rootfs,15G,mkfs.ext4"
-		"boot,/rootfs/boot,500M,mkfs.ext4"
+		"boot,/rootfs/boot,1G,mkfs.ext4"
 		"efi,/rootfs/boot/efi,500M,mkfs.fat -F 32"
 	)
 	for partition in "${partitions[@]}"; do
@@ -128,6 +128,7 @@ install_bootloader() {
 		done
 	fi
 
+	echo 'BOOT_ROOT=/boot' >> $rootfs/etc/kernel/install.conf
 	echo 'layout=bls' >> $rootfs/etc/kernel/install.conf
 	if [ $loader = 'grub2' ]; then
 		# theme
@@ -142,18 +143,16 @@ install_bootloader() {
 
 		# install
 		rm -rf $rootfs/etc/grub.d/30_os-prober
-		chroot_rootfs kernel-install add-all
-		chroot_rootfs dracut -f --regenerate-all --no-hostonly
 		chroot_rootfs grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 	else
 		# config
 		mkdir -p $rootfs/boot/loader/entries
 
 		# install
-		chroot_rootfs kernel-install add-all
-		chroot_rootfs dracut -f --regenerate-all --no-hostonly
 		chroot_rootfs SYSTEMD_RELAX_ESP_CHECKS=1 bootctl install --esp-path=/boot/efi || true
 	fi
+	chroot_rootfs kernel-install add-all
+	chroot_rootfs dracut -f --regenerate-all --no-hostonly
 }
 
 finalize() {
