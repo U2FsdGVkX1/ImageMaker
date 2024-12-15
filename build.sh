@@ -143,6 +143,7 @@ install_bootloader() {
 		# install
 		rm -rf $rootfs/etc/grub.d/30_os-prober
 		chroot_rootfs kernel-install add-all
+		chroot_rootfs dracut -f --regenerate-all --no-hostonly
 		chroot_rootfs grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 	else
 		# config
@@ -150,6 +151,7 @@ install_bootloader() {
 
 		# install
 		chroot_rootfs kernel-install add-all
+		chroot_rootfs dracut -f --regenerate-all --no-hostonly
 		chroot_rootfs SYSTEMD_RELAX_ESP_CHECKS=1 bootctl install --esp-path=/boot/efi || true
 	fi
 }
