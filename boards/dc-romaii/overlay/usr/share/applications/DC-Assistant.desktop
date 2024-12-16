@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=DC Assistant
+Type=Application
+Exec=firefox --new-window "https://deepcomputing.ai/"
+Icon=/usr/local/roma.png
+

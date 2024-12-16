@@ -1,0 +1,2 @@
+rm -rf $rootfs/etc/issue $rootfs/etc/issue.net
+chroot_rootfs 'echo "root:roma" | chpasswd'
