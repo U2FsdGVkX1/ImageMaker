@@ -128,31 +128,35 @@ install_bootloader() {
 		done
 	fi
 
-	echo 'BOOT_ROOT=/boot' >> $rootfs/etc/kernel/install.conf
-	echo 'layout=bls' >> $rootfs/etc/kernel/install.conf
+	# install
 	if [ $loader = 'grub2' ]; then
 		# theme
 		wget -O theme.tar.gz http://openkoji.iscas.ac.cn/pub/dist-repos/dl/grubtheme.tar.gz
 		tar xf theme.tar.gz -C $rootfs --no-same-owner
 		rm -rf theme.tar.gz
-
-		# config
-		echo 'GRUB_CMDLINE_LINUX="rootwait clk_ignore_unused splash plymouth.ignore-serial-consoles selinux=0"' >> $rootfs/etc/default/grub
 		echo 'GRUB_THEME=/boot/grub2/themes/fedoravforce/theme.txt' >> $rootfs/etc/default/grub
-		echo 'GRUB_TIMEOUT=3' >> $rootfs/etc/default/grub
 
 		# install
 		rm -rf $rootfs/etc/grub.d/30_os-prober
 		chroot_rootfs grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 	else
-		# config
-		mkdir -p $rootfs/boot/loader/entries
-
-		# install
 		chroot_rootfs SYSTEMD_RELAX_ESP_CHECKS=1 bootctl install --esp-path=/boot/efi || true
 	fi
+
+	# bls config
+	local params=""
+	if [ -f $rootfs/etc/kernel/cmdline ]; then
+		params=$(cat $rootfs/etc/kernel/cmdline | tr -d '\n')
+	fi
+	params="${params}rootwait clk_ignore_unused splash plymouth.ignore-serial-consoles selinux=0"
+	echo "$params" > $rootfs/etc/kernel/cmdline
+	echo 'BOOT_ROOT=/boot' >> $rootfs/etc/kernel/install.conf
+	echo 'layout=bls' >> $rootfs/etc/kernel/install.conf
+
+	# initrd
+	echo 'hostonly="no"' > $rootfs/etc/dracut.conf.d/no-hostonly.conf
 	chroot_rootfs kernel-install add-all
-	chroot_rootfs dracut -f --regenerate-all --no-hostonly
+	rm -rf $rootfs/etc/dracut.conf.d/no-hostonly.conf
 }
 
 finalize() {
@@ -160,6 +164,9 @@ finalize() {
 	genfstab -U $rootfs > $rootfs/etc/fstab
 	perl -i -pe 's/iocharset=.+?,//' $rootfs/etc/fstab
 	perl -i -ne 'print unless /zram/' $rootfs/etc/fstab
+
+	# locale
+	echo 'LANG="en_US.UTF-8"' > $rootfs/etc/locale.conf
 
 	# gnome-initial
 	mkdir -p $rootfs/etc/gnome-initial-setup
