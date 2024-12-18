@@ -1,0 +1,1 @@
+echo 'GRUB_TIMEOUT=10' >> $rootfs/etc/default/grub
