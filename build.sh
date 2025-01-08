@@ -213,7 +213,7 @@ generate_image() {
 
 shellpath=$PWD
 arch="riscv64"
-repourl="http://openkoji.iscas.ac.cn/kojifiles/repos/f41-build-side-1/latest/riscv64"
+repourl="http://openkoji.iscas.ac.cn/kojifiles/repos/f41-build/latest/riscv64"
 loader=grub2
 desktop=gnome
 tag=
