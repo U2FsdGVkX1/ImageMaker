@@ -20,7 +20,7 @@ prepare_boardconfig() {
 	local configpath=$shellpath/boards/$1
 	local inheritpath=$configpath/inherit
 	if [ -f $inheritpath ]; then
-		prepare_boardconfig $(cat $inheritpath) $tag
+		prepare_boardconfig $(cat $inheritpath)
 	fi
 
 	boardpath=$tmp/config
