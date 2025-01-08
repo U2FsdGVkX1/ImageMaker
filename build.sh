@@ -18,6 +18,15 @@ chroot_rootfs() {
 
 prepare_boardconfig() {
 	local configpath=$shellpath/boards/$1
+	if [ -n "$tag" ]; then
+		local tagpath=$configpath/tags/$tag
+		if [ ! -d $tagpath ]; then
+			echo "Tag $tag not found in board $1"
+			exit 1
+		fi
+		configpath=$tagpath
+	fi
+	
 	local inheritpath=$configpath/inherit
 	if [ -f $inheritpath ]; then
 		prepare_boardconfig $(cat $inheritpath)
@@ -26,14 +35,6 @@ prepare_boardconfig() {
 	boardpath=$tmp/config
 	mkdir -p $boardpath
 	cp -rfv $configpath/* $boardpath
-
-	local tagpath=$configpath/tags/$tag
-	if [ -n "$tag" ] && [ -d $tagpath ]; then
-		find $tagpath -mindepth 1 -maxdepth 1 -printf "%f\n" | while read -r name; do
-			rm -rfv $boardpath/$name
-		done
-		cp -rfv $tagpath/* $boardpath
-	fi
 }
 
 prepare_partitions() {
