@@ -127,13 +127,23 @@ overlay_rootfs() {
 }
 
 finalize() {
+	# pre
 	local prepath=$boardpath/pre
 	if [ -d $prepath ]; then
 		for script in $prepath/*; do
 			source $script
 		done
 	fi
+
+	# fstab
+	genfstab -U $rootfs > $rootfs/etc/fstab
+	perl -i -pe 's/iocharset=.+?,//' $rootfs/etc/fstab
+	perl -i -ne 'print unless /zram/' $rootfs/etc/fstab
+
+	# clean
+	chroot_rootfs dnf clean all
 	
+	# post
 	local postpath=$boardpath/post
 	if [ -d $postpath ]; then
 		for script in $postpath/*; do
