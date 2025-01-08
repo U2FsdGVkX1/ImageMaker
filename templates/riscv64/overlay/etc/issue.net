@@ -1,0 +1,17 @@
+Welcome to the Fedora RISC-V disk image
+https://openkoji.iscas.ac.cn/koji/
+
+Build date: $(date --utc)
+
+Kernel \r on an \m (\l)
+
+The root password is 'riscv'.
+root password logins are disabled in SSH starting Fedora.
+
+If DNS isn’t working, try editing ‘/etc/yum.repos.d/fedora-riscv.repo’.
+
+For updates and latest information read:
+https://fedoraproject.org/wiki/Architectures/RISC-V
+
+Fedora RISC-V
+-------------

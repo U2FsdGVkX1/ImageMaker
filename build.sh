@@ -26,14 +26,20 @@ prepare_boardconfig() {
 		fi
 		configpath=$tagpath
 	fi
-	
+
 	local inheritpath=$configpath/inherit
 	if [ -f $inheritpath ]; then
 		prepare_boardconfig $(cat $inheritpath)
 	fi
 
 	boardpath=$tmp/config
-	mkdir -p $boardpath
+	if [ ! -d $boardpath ]; then
+		mkdir -p $boardpath
+		local templatepath=$shellpath/templates/$arch
+		if [ -d $templatepath ]; then
+			cp -rfv $templatepath/* $boardpath
+		fi
+	fi
 	cp -rfv $configpath/* $boardpath
 }
 
@@ -64,8 +70,8 @@ prepare_rootfs() {
 prepare_repos() {
 	rm -f $rootfs/etc/yum.repos.d/*.repo
 	chroot_rootfs "dnf config-manager addrepo \
-		--id='fedora-riscv' \
-		--set=name='Fedora RISC-V' \
+		--id='fedora' \
+		--set=name='Fedora \$releasever - \$basearch' \
 		--set=baseurl=$repourl"
 
 	local repospath=$boardpath/repos
@@ -120,85 +126,14 @@ overlay_rootfs() {
 	cp -rfv $overlaypath/* $rootfs
 }
 
-install_bootloader() {
-	# pre
+finalize() {
 	local prepath=$boardpath/pre
 	if [ -d $prepath ]; then
 		for script in $prepath/*; do
 			source $script
 		done
 	fi
-
-	# install
-	if [ $loader = 'grub2' ]; then
-		# theme
-		wget -O theme.tar.gz http://openkoji.iscas.ac.cn/pub/dist-repos/dl/grubtheme.tar.gz
-		tar xf theme.tar.gz -C $rootfs --no-same-owner
-		rm -rf theme.tar.gz
-		echo 'GRUB_THEME=/boot/grub2/themes/fedoravforce/theme.txt' >> $rootfs/etc/default/grub
-
-		# install
-		rm -rf $rootfs/etc/grub.d/30_os-prober
-		chroot_rootfs grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
-	else
-		chroot_rootfs SYSTEMD_RELAX_ESP_CHECKS=1 bootctl install --esp-path=/boot/efi || true
-	fi
-
-	# bls config
-	local params=""
-	if [ -f $rootfs/etc/kernel/cmdline ]; then
-		params=$(cat $rootfs/etc/kernel/cmdline | tr -d '\n')
-	fi
-	params="${params}rootwait clk_ignore_unused splash plymouth.ignore-serial-consoles selinux=0"
-	echo "$params" > $rootfs/etc/kernel/cmdline
-	echo 'BOOT_ROOT=/boot' >> $rootfs/etc/kernel/install.conf
-	echo 'layout=bls' >> $rootfs/etc/kernel/install.conf
-
-	# initrd
-	echo 'hostonly="no"' > $rootfs/etc/dracut.conf.d/no-hostonly.conf
-	chroot_rootfs kernel-install add-all
-	rm -rf $rootfs/etc/dracut.conf.d/no-hostonly.conf
-}
-
-finalize() {
-	# fstab
-	genfstab -U $rootfs > $rootfs/etc/fstab
-	perl -i -pe 's/iocharset=.+?,//' $rootfs/etc/fstab
-	perl -i -ne 'print unless /zram/' $rootfs/etc/fstab
-
-	# locale
-	echo 'LANG="en_US.UTF-8"' > $rootfs/etc/locale.conf
-
-	# gnome-initial
-	mkdir -p $rootfs/etc/gnome-initial-setup
-	touch $rootfs/etc/gnome-initial-setup/vendor.conf
-
-	# issue
-	cat << EOF | tee $rootfs/etc/issue $rootfs/etc/issue.net
-Welcome to the Fedora RISC-V disk image
-https://openkoji.iscas.ac.cn/koji/
-
-Build date: $(date --utc)
-
-Kernel \r on an \m (\l)
-
-The root password is 'riscv'.
-root password logins are disabled in SSH starting Fedora.
-
-If DNS isn’t working, try editing ‘/etc/yum.repos.d/fedora-riscv.repo’.
-
-For updates and latest information read:
-https://fedoraproject.org/wiki/Architectures/RISC-V
-
-Fedora RISC-V
--------------
-EOF
-
-	# others
-	chroot_rootfs "echo 'root:riscv' | chpasswd"
-	chroot_rootfs dnf clean all
-
-	# post
+	
 	local postpath=$boardpath/post
 	if [ -d $postpath ]; then
 		for script in $postpath/*; do
@@ -243,11 +178,6 @@ if [ "$desktop" = "core" ]; then
 elif [ "$desktop" = "gnome" ]; then
 	rootfspkgs+=" @workstation-product @gnome-desktop"
 fi
-if [ "$loader" = "grub2" ]; then
-	rootfspkgs+=" grub2-efi-riscv64"
-elif [ "$loader" = "systemd" ]; then
-	rootfspkgs+=" systemd-boot-unsigned sdubby"
-fi
 
 tmp=$(mktemp -d -p $PWD)
 pushd $tmp
@@ -258,7 +188,6 @@ prepare_repos
 install_pkgs
 download_sources
 overlay_rootfs
-install_bootloader
 finalize
 generate_image
 popd

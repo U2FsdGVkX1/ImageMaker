@@ -1,0 +1,14 @@
+# bls
+params=""
+if [ -f $rootfs/etc/kernel/cmdline ]; then
+    params=$(cat $rootfs/etc/kernel/cmdline | tr -d '\n')
+fi
+params="${params}rootwait clk_ignore_unused splash plymouth.ignore-serial-consoles selinux=0"
+echo "$params" > $rootfs/etc/kernel/cmdline
+echo 'BOOT_ROOT=/boot' >> $rootfs/etc/kernel/install.conf
+echo 'layout=bls' >> $rootfs/etc/kernel/install.conf
+
+# initrd
+echo 'hostonly="no"' > $rootfs/etc/dracut.conf.d/no-hostonly.conf
+chroot_rootfs kernel-install add-all
+rm -rf $rootfs/etc/dracut.conf.d/no-hostonly.conf

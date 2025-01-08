@@ -1,0 +1,1 @@
+chroot_rootfs dnf clean all

@@ -1,0 +1,14 @@
+if [ $loader != 'grub2' ]; then
+    return
+fi
+
+# theme
+wget -O theme.tar.gz http://openkoji.iscas.ac.cn/pub/dist-repos/dl/grubtheme.tar.gz
+tar xf theme.tar.gz -C $rootfs --no-same-owner
+rm -rf theme.tar.gz
+echo 'GRUB_THEME=/boot/grub2/themes/fedoravforce/theme.txt' >> $rootfs/etc/default/grub
+
+# install
+chroot_rootfs dnf install -y grub2-efi-riscv64
+rm -rf $rootfs/etc/grub.d/30_os-prober
+chroot_rootfs grub2-mkconfig -o /boot/grub2/grub.cfg

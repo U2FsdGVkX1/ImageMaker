@@ -1,0 +1,6 @@
+if [ $loader != 'systemd' ]; then
+    return
+fi
+
+chroot_rootfs dnf install -y systemd-boot-unsigned sdubby
+chroot_rootfs SYSTEMD_RELAX_ESP_CHECKS=1 bootctl install --esp-path=/boot/efi || true

@@ -1,0 +1,3 @@
+genfstab -U $rootfs > $rootfs/etc/fstab
+perl -i -pe 's/iocharset=.+?,//' $rootfs/etc/fstab
+perl -i -ne 'print unless /zram/' $rootfs/etc/fstab
