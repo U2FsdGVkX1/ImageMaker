@@ -68,12 +68,6 @@ prepare_rootfs() {
 }
 
 prepare_repos() {
-	rm -f $rootfs/etc/yum.repos.d/*.repo
-	chroot_rootfs "dnf config-manager addrepo \
-		--id='fedora' \
-		--set=name='Fedora \$releasever - \$basearch' \
-		--set=baseurl=$repourl"
-
 	local repospath=$boardpath/repos
 	if [ ! -d $repospath ]; then
 		return
