@@ -4,8 +4,7 @@ set -ex
 
 [ "$(id -u)" -ne 0 ] && echo "This script must be run as root." && exit 1
 [ "$(getenforce)" == "Enforcing" ] && echo "SELinux is enabled, The script will not run." && exit 2
-[ ! -f genimage-bin ] && echo "genimage-bin file not found, please obtain it by getgenimage.sh." && exit 3
-command -v genfstab >/dev/null 2>&1 || { echo >&2 "genfstab command not found, exiting."; exit 4; }
+[ ! -f genimage-bin ] && echo "genimage-bin file not found, Please obtain it by getgenimage.sh." && exit 3
 
 chroot_rootfs() {
 	mount --bind /etc/resolv.conf $rootfs/etc/resolv.conf
@@ -130,9 +129,16 @@ finalize() {
 	fi
 
 	# fstab
-	genfstab -U $rootfs > $rootfs/etc/fstab
-	perl -i -pe 's/iocharset=.+?,//' $rootfs/etc/fstab
-	perl -i -ne 'print unless /zram/' $rootfs/etc/fstab
+	while read -r uuid mountpoint fstype _; do
+		newmountpoint="${mountpoint#$rootfs}"
+		if [ "$mountpoint" == "$newmountpoint" ]; then
+			continue
+		fi
+		if [ -z "$newmountpoint" ]; then
+			newmountpoint="/"
+		fi
+		echo -e "UUID=${uuid}\t${newmountpoint}\t${fstype}\tdefaults\t0 0" >> $rootfs/etc/fstab
+	done < <(lsblk -n -o UUID,MOUNTPOINT,FSTYPE)
 
 	# clean
 	chroot_rootfs dnf clean all
