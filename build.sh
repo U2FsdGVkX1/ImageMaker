@@ -212,6 +212,7 @@ elif [ "$desktop" = "GNOME" ]; then
 	rootfspkgs+=" @workstation-product @gnome-desktop"
 elif [ "$desktop" = "Xfce" ]; then
 	rootfspkgs+=" @xfce-desktop @xfce-apps @xfce-extra-plugins @xfce-media @xfce-office"
+	rootfspkgs+=" -x NetworkManager-l2tp-gnome"
 fi
 
 tmp=$(mktemp -d -p $shellpath)
