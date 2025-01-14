@@ -1,1 +1,1 @@
-mv esos.elf $rootfs/lib/firmware
+cp esos.elf $rootfs/lib/firmware
