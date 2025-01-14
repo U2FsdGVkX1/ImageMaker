@@ -36,9 +36,14 @@ chroot_rootfs() {
 
 prepare_boardconfig() {
 	local configpath=$shellpath/boards/$1
+	if [ -n "$2" ]; then
+		configpath=$configpath/tags/$2
+	fi
+
 	local inheritpath=$configpath/inherit
 	if [ -f $inheritpath ]; then
-		prepare_boardconfig $(cat $inheritpath)
+		read -r board tag < $inheritpath
+		prepare_boardconfig $board $tag
 	fi
 
 	if [ ! -d $boardpath ]; then
@@ -48,14 +53,7 @@ prepare_boardconfig() {
 			cp -rfv $templatepath/* $boardpath
 		fi
 	fi
-
 	cp -rfv $configpath/* $boardpath
-	if [ -n "$tag" ]; then
-		local tagpath=$configpath/tags/$tag
-		if [ -d $tagpath]; then
-			cp -rfv $tagpath/* $boardpath
-		fi
-	fi
 }
 
 prepare_partitions() {
@@ -221,7 +219,7 @@ boardpath=$tmp/config
 trap 'save_context' ERR SIGINT
 
 pushd $tmp
-prepare_boardconfig $board
+prepare_boardconfig $board $tag
 prepare_partitions
 prepare_rootfs "$rootfspkgs"
 prepare_repos
