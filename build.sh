@@ -1,10 +1,29 @@
 #!/bin/bash
 
-set -ex
+set -Eex
 
 [ "$(id -u)" -ne 0 ] && echo "This script must be run as root." && exit 1
 [ "$(getenforce)" == "Enforcing" ] && echo "SELinux is enabled, The script will not run." && exit 2
 [ ! -f genimage-bin ] && echo "genimage-bin file not found, Please obtain it by getgenimage.sh." && exit 3
+
+save_context() {
+	if [ -n "$resume" ]; then
+		return
+	fi
+	resume="y"
+
+	local len=${#FUNCNAME[@]}
+	local except=${FUNCNAME[$((len - 2))]}
+	grep $tmp /proc/mounts | cut -d" " -f2 | sort -r | xargs umount
+	popd
+
+	sed -e "/^tmp=/c tmp=$tmp" $shellpath/build.sh > $shellpath/resume
+	local startline=$(grep -En "^prepare_partitions$" $shellpath/resume | awk -F: '{print $1}')
+	local endline=$(grep -En "^$except($| )" $shellpath/resume | awk -F: '{print $1}')
+	if (( startline + 1 < endline )); then
+		sed -i "$((startline + 1)),$((endline - 1))d" $shellpath/resume
+	fi
+}
 
 chroot_rootfs() {
 	mount --bind /etc/resolv.conf $rootfs/etc/resolv.conf
@@ -22,7 +41,6 @@ prepare_boardconfig() {
 		prepare_boardconfig $(cat $inheritpath)
 	fi
 
-	boardpath=$tmp/config
 	if [ ! -d $boardpath ]; then
 		mkdir -p $boardpath
 		local templatepath=$shellpath/templates/$arch
@@ -51,7 +69,9 @@ prepare_partitions() {
 		mountpoint=$tmp$mountpoint
 		eval "$name=$mountpoint"
 
-		fallocate -l $size $name.img && $cmd $name.img
+		if [ ! -f $name.img ]; then
+			fallocate -l $size $name.img && $cmd $name.img
+		fi
 		mkdir -p $mountpoint && mount $name.img $mountpoint
 	done
 }
@@ -155,14 +175,14 @@ generate_image() {
 	$shellpath/genimage-bin --inputpath $tmp --outputpath $shellpath --rootpath $tmp --config $boardpath/genimage.cfg
 }
 
-shellpath=$PWD
+shellpath=$(dirname $(realpath $0))
 arch="riscv64"
 repourl="http://openkoji.iscas.ac.cn/kojifiles/repos/f41-build/latest/riscv64"
 loader=grub2
 desktop=gnome
 tag=
 board=
-while getopts "l:d:t:b:" opt; do
+while getopts "l:d:t:b:r" opt; do
 	case $opt in
 	l)
 		loader=$OPTARG
@@ -176,6 +196,13 @@ while getopts "l:d:t:b:" opt; do
 	b)
 		board=$OPTARG
 		;;
+	r)
+		if [ $(basename $0) != "resume" ]; then
+			exec bash $shellpath/resume $@
+		else
+			rm -rf $shellpath/resume
+		fi
+		;;
 	esac
 done
 shift $((OPTIND - 1))
@@ -187,7 +214,10 @@ elif [ "$desktop" = "gnome" ]; then
 	rootfspkgs+=" @workstation-product @gnome-desktop"
 fi
 
-tmp=$(mktemp -d -p $PWD)
+tmp=$(mktemp -d -p $shellpath)
+boardpath=$tmp/config
+trap 'save_context' ERR SIGINT
+
 pushd $tmp
 prepare_boardconfig $board
 prepare_partitions
