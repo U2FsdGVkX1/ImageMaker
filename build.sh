@@ -206,11 +206,11 @@ done
 shift $((OPTIND - 1))
 
 rootfspkgs="@hardware-support"
-if [ "$desktop" = "core" ]; then
+if [ "$desktop" = "Minimal" ]; then
 	rootfspkgs+=" @core glibc-all-langpacks"
-elif [ "$desktop" = "gnome" ]; then
+elif [ "$desktop" = "GNOME" ]; then
 	rootfspkgs+=" @workstation-product @gnome-desktop"
-elif [ "$desktop" = "xfce" ]; then
+elif [ "$desktop" = "Xfce" ]; then
 	rootfspkgs+=" @xfce-desktop @xfce-apps @xfce-extra-plugins @xfce-media @xfce-office"
 fi
 
