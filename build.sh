@@ -50,10 +50,10 @@ prepare_boardconfig() {
 		mkdir -p $boardpath
 		local templatepath=$shellpath/templates/$arch
 		if [ -d $templatepath ]; then
-			cp -rfv $templatepath/* $boardpath
+			cp -rfvL $templatepath/* $boardpath
 		fi
 	fi
-	cp -rfv $configpath/* $boardpath
+	cp -rfvL $configpath/* $boardpath
 }
 
 prepare_partitions() {
