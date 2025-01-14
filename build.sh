@@ -212,6 +212,8 @@ if [ "$desktop" = "core" ]; then
 	rootfspkgs+=" @core glibc-all-langpacks"
 elif [ "$desktop" = "gnome" ]; then
 	rootfspkgs+=" @workstation-product @gnome-desktop"
+elif [ "$desktop" = "xfce" ]; then
+	rootfspkgs+=" @xfce-desktop @xfce-apps @xfce-extra-plugins @xfce-media @xfce-office"
 fi
 
 tmp=$(mktemp -d -p $shellpath)
