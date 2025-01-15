@@ -1,0 +1,1 @@
+FS0:\EFI\Fedora\grubriscv64.efi
