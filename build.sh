@@ -205,13 +205,15 @@ while getopts "l:d:t:b:r" opt; do
 done
 shift $((OPTIND - 1))
 
-rootfspkgs="@hardware-support"
+rootfspkgs="@core @hardware-support glibc-all-langpacks"
 if [ "$desktop" = "Minimal" ]; then
-	rootfspkgs+=" @core glibc-all-langpacks"
+	rootfspkgs+=""
 elif [ "$desktop" = "GNOME" ]; then
+	rootfspkgs+=" fedora-release-workstation"
 	rootfspkgs+=" @workstation-product @gnome-desktop"
 elif [ "$desktop" = "Xfce" ]; then
-	rootfspkgs+=" @xfce-desktop @xfce-apps @xfce-extra-plugins @xfce-media @xfce-office"
+	rootfspkgs+=" fedora-release-xfce"
+	rootfspkgs+=" @xfce-desktop @xfce-apps"
 	rootfspkgs+=" -x NetworkManager-l2tp-gnome"
 fi
 
