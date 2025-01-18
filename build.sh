@@ -145,16 +145,13 @@ finalize() {
 	fi
 
 	# fstab
-	while read -r uuid mountpoint fstype _; do
-		newmountpoint="${mountpoint#$rootfs}"
-		if [ "$mountpoint" == "$newmountpoint" ]; then
-			continue
+	while read -r uuid mountpoint fstype; do
+		mountpoint="${mountpoint#$rootfs}"
+		if [ -z "$mountpoint" ]; then
+			mountpoint="/"
 		fi
-		if [ -z "$newmountpoint" ]; then
-			newmountpoint="/"
-		fi
-		echo -e "UUID=${uuid}\t${newmountpoint}\t${fstype}\tdefaults\t0 0" >> $rootfs/etc/fstab
-	done < <(lsblk -n -o UUID,MOUNTPOINT,FSTYPE)
+		echo -e "UUID=${uuid}\t${mountpoint}\t${fstype}\tdefaults\t0 0" >> $rootfs/etc/fstab
+	done < <(findmnt -Rln -o UUID,TARGET,FSTYPE $rootfs)
 
 	# clean
 	chroot_rootfs dnf clean all
