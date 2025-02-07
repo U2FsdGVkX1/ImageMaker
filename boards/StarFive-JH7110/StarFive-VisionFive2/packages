@@ -1,6 +1,5 @@
 # gpu
 llvm16-libs
-clang16-libs
 img-gpu-ddk
 mesa-dri-drivers-22.3.6-1.fc41
 
