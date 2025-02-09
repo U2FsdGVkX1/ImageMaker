@@ -9,7 +9,7 @@ Kernel \r on an \m (\l)
 The root password is 'riscv'.
 root password logins are disabled in SSH starting Fedora.
 
-If DNS isn’t working, try editing ‘/etc/resolv.conf’ or using `resolvctl`.
+If DNS isn’t working, try editing ‘/etc/resolv.conf’ or using 'resolvctl'.
 
 For updates and latest information read:
 https://fedoraproject.org/wiki/Architectures/RISC-V
