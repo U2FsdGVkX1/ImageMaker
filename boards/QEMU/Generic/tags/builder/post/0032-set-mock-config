@@ -1,0 +1,3 @@
+cat << EOF > $rootfs/etc/mock/site-defaults.cfg
+config_opts['use_nspawn'] = False
+EOF

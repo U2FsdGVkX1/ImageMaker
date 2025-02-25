@@ -1,0 +1,8 @@
+cat << EOF >> $rootfs/etc/rc.d/rc.local
+#!/bin/bash
+RC_LOCAL_LOG=/var/log/rc-local.log
+echo updating CA for koji builder \$(date) >> \$RC_LOCAL_LOG
+update-ca-trust
+EOF
+
+chmod 755 $rootfs/etc/rc.d/rc.local

@@ -1,0 +1,8 @@
+cat << EOF >> $rootfs/etc/fstab
+/dev/vdb1  /mnt/storage ext4    defaults,noatime,x-systemd.device-timeout=300s,x-systemd.mount-timeout=300s 0 0
+
+# bind external storage
+/mnt/storage/kojid      /etc/kojid      none    bind,defaults   0       0
+/mnt/storage/mock       /var/lib/mock   none    bind,defaults   0       0
+/mnt/storage/anchors    /etc/pki/ca-trust/source/anchors        none    bind,defaults   0       0
+EOF

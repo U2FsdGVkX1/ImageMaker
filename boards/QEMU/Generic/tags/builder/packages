@@ -1,0 +1,11 @@
+kernel
+@fedora-packager
+koji-builder
+koji-builder-plugin-rpmautospec
+koji-builder-plugins
+
+glibc-all-langpacks
+glibc-langpack-en
+
+haveged
+@appliance-build
