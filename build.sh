@@ -57,14 +57,11 @@ prepare_boardconfig() {
 }
 
 prepare_partitions() {
-	local partitions=(
-		"rootfs,/rootfs,15G,mkfs.ext4"
-		"boot,/rootfs/boot,1G,mkfs.ext4"
-		"efi,/rootfs/boot/efi,500M,mkfs.fat -F 32"
-	)
+	local -a partitions
+	mapfile -t partitions < $boardpath/partitions
 	for partition in "${partitions[@]}"; do
 		IFS="," read -r name mountpoint size cmd <<< $partition
-		mountpoint=$tmp$mountpoint
+		mountpoint=$(realpath $tmp/rootfs/$mountpoint)
 		eval "$name=$mountpoint"
 
 		if [ ! -f $name.img ]; then

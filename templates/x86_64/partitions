@@ -1,0 +1,3 @@
+rootfs,/,15G,mkfs.ext4
+boot,/boot,1G,mkfs.ext4
+efi,/boot/efi,500M,mkfs.fat -F 32
