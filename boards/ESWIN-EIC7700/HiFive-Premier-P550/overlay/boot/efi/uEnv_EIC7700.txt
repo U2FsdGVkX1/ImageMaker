@@ -1,0 +1,4 @@
+bootextlinux=setenv fdtfile eswin/eic7700-hifive-premier-p550.dtb;sysboot ${boot_device}:2 any $kernel_addr_r /extlinux/extlinux.conf;
+boot_init=setenv boot_device 'mmc 1';run bootextlinux;setenv boot_device 'mmc 0';run bootextlinux;setenv boot_device 'usb 0';run bootextlinux;setenv boot_device 'nvme 0';run bootextlinux;
+
+bootcmd=run boot_init;
