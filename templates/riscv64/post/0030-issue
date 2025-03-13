@@ -1,6 +1,6 @@
 cat << EOF | tee $rootfs/etc/issue $rootfs/etc/issue.net
 Welcome to the Fedora-V Force disk image
-https://images.fedoravforce.org/
+https://www.fedoravforce.org
 
 Build date: $(date --utc)
 
@@ -12,7 +12,7 @@ root password logins are disabled in SSH starting Fedora.
 If DNS isn’t working, try editing ‘/etc/resolv.conf’ or using 'resolvctl'.
 
 For updates and latest information read:
-https://fedoraproject.org/wiki/Architectures/RISC-V
+https://images.fedoravforce.org
 
 Fedora RISC-V
 -------------
