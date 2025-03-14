@@ -174,8 +174,14 @@ loader=grub2
 desktop=gnome
 tag=
 board=
-while getopts "l:d:t:b:r" opt; do
+while getopts "a:r:l:d:t:b:R" opt; do
 	case $opt in
+	a)
+		arch=$OPTARG
+		;;
+	r)
+		repourl=$OPTARG
+		;;
 	l)
 		loader=$OPTARG
 		;;
@@ -188,7 +194,7 @@ while getopts "l:d:t:b:r" opt; do
 	b)
 		board=$OPTARG
 		;;
-	r)
+	R)
 		if [ $(basename $0) != "resume" ]; then
 			exec bash $shellpath/resume $@
 		else
