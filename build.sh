@@ -169,7 +169,7 @@ generate_image() {
 
 shellpath=$(dirname $(realpath $0))
 arch="riscv64"
-repourl="http://openkoji.iscas.ac.cn/kojifiles/repos/f41-build/latest/riscv64"
+repourl="http://openkoji.iscas.ac.cn/kojifiles/repos/f42-build/latest/riscv64"
 loader=grub2
 desktop=gnome
 tag=
