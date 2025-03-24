@@ -1,7 +1,7 @@
-https://mirror.iscas.ac.cn/fedora-riscv/dl/SpacemiT/K1_M1/kernel-cross/6.6.36+.tar.gz
-https://mirror.iscas.ac.cn/fedora-riscv/dl/SpacemiT/K1_M1/fw/FSBL.bin
-https://mirror.iscas.ac.cn/fedora-riscv/dl/SpacemiT/K1_M1/fw/bootinfo_sd.bin
-https://mirror.iscas.ac.cn/fedora-riscv/dl/SpacemiT/K1_M1/fw/fw_dynamic.itb
-https://mirror.iscas.ac.cn/fedora-riscv/dl/SpacemiT/K1_M1/fw/u-boot-env-default.bin
-https://mirror.iscas.ac.cn/fedora-riscv/dl/SpacemiT/K1_M1/fw/u-boot.itb
+http://openkoji.iscas.ac.cn/pub/dist-repos/dl/SpacemiT/K1_M1/kernel-cross/kernel.tar.gz
+http://openkoji.iscas.ac.cn/pub/dist-repos/dl/SpacemiT/K1_M1/fw/FSBL.bin
+http://openkoji.iscas.ac.cn/pub/dist-repos/dl/SpacemiT/K1_M1/fw/bootinfo_sd.bin
+http://openkoji.iscas.ac.cn/pub/dist-repos/dl/SpacemiT/K1_M1/fw/fw_dynamic.itb
+http://openkoji.iscas.ac.cn/pub/dist-repos/dl/SpacemiT/K1_M1/fw/u-boot-env-default.bin
+http://openkoji.iscas.ac.cn/pub/dist-repos/dl/SpacemiT/K1_M1/fw/u-boot.itb
 https://gitee.com/bianbu-linux/buildroot-ext/raw/bl-v2.0.y/board/spacemit/k1/target_overlay/lib/firmware/esos.elf
