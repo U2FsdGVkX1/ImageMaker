@@ -1,2 +1,9 @@
 fastfetch
 
+git
+cmake
+ninja-build
+cmake
+gcc
+gcc-c++
+vim
