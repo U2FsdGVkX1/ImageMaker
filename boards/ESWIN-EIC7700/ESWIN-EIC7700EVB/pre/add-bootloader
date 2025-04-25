@@ -1,1 +1,2 @@
 mv bootloader_secboot_ddr5.bin $rootfs/boot
+mv update.disk.gz $rootfs/boot/efi
