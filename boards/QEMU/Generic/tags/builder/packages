@@ -8,4 +8,4 @@ glibc-all-langpacks
 glibc-langpack-en
 
 haveged
-@appliance-build
+appliance-tools
