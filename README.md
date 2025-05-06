@@ -1,6 +1,6 @@
 # ImageMaker NEXT
 
-This script automates the process of building custom operating system images. It handles partition creation, root filesystem population using `dnf5`, package installation, source code downloading and extraction, overlaying custom files, and finally, generating a bootable image.
+This script automates the generation of custom, RPM-based operating system images, specifically designed for various development boards. It handles partition creation, root filesystem population using `dnf5`, package installation, source code downloading and extraction, overlaying custom files, and finally, generating a bootable image.
 
 The script is designed to be configurable through "board" profiles, allowing for different image types and configurations to be built with the same core logic.
 
