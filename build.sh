@@ -169,9 +169,9 @@ generate_image() {
 
 shellpath=$(dirname $(realpath $0))
 arch="riscv64"
-repourl="http://openkoji.iscas.ac.cn/kojifiles/repos/f41-build/latest/riscv64"
+repourl=
 loader=grub2
-desktop=gnome
+desktop=Minimal
 tag=
 board=
 while getopts "a:r:l:d:t:b:R" opt; do
