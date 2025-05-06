@@ -20,7 +20,7 @@ The script accepts the following command-line parameters:
 | `-b`   | `board`   | (none)            | **Required.** The name of the board configuration to use. Corresponds to a directory in `./boards/`.       |
 | `-r`   | `repourl` | (none)            | **Required.** URL to the DNF repository to be used for the base rootfs installation.                       |
 | `-a`   | `arch`    | `riscv64`         | Target architecture for the image (e.g., `riscv64`, `x86_64`, `aarch64`). Used by `dnf5`.                  |
-| `-l`   | `loader`  | `grub2`           | Specifies the bootloader type. This value is stored and might be used by board-specific configurations.    |
+| `-l`   | `loader`  | `grub2`           | Specifies the bootloader type. Options: `grub2`, `extlinux`, `systemd`.                                    |
 | `-d`   | `desktop` | `Minimal`         | Specifies the desktop environment to install. Options: `Minimal`, `GNOME`, `Xfce`. Affects base packages.  |
 | `-t`   | `tag`     | (none)            | An optional tag to select a specific variant of a board configuration.                                     |
 | `-R`   |           |                   | Resume a previously failed build. The script will attempt to continue from the last successful major step. |
