@@ -23,7 +23,7 @@ A board configuration can consist of the following files and directories (The $b
     * **Format**: A CSV-like file, with each line defining a partition. Fields are comma-separated:
         `partition_variable_name,mount_point,size,mkfs_command_and_options`
         * `partition_variable_name`: A name used to create a shell variable (e.g., `rootfs`, `boot`). The actual image file will be named `$partition_variable_name.img` (e.g., `rootfs.img`).
-        * `mount_point_suffix`: The path relative to the rootfs where this partition will be mounted (e.g., `/boot`, `/boot/efi`, `/`). An empty suffix or `/` refers to the root of the rootfs.
+        * `mount_point`: The path relative to the rootfs where this partition will be mounted (e.g., `/boot`, `/boot/efi`, `/`). An empty suffix or `/` refers to the root of the rootfs.
         * `size`: The size of the partition image file (e.g., `100M`, `4G`). Passed to `fallocate -l`.
         * `mkfs_command_and_options`: The command used to create the filesystem on the partition image (e.g., `mkfs.ext4`, `mkfs.vfat`). The partition image file (e.g., `rootfs.img`) will be appended as the last argument to this command.
     * **Example**:
