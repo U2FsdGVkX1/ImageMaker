@@ -1,10 +1,10 @@
 bootgrub=load ${boot_device}:1 $kernel_addr_r /EFI/fedora/grubriscv64.efi;load ${boot_device}:2 $fdt_addr_r /dtb/${fdtfile};bootefi $kernel_addr_r $fdt_addr_r;
 bootextlinux=sysboot ${boot_device}:2 any $kernel_addr_r /extlinux/extlinux.conf
 
-bootway_test=if test "${extlinux}" = "y"; then\
-    setenv bootway bootextlinux\
-  else\
+bootway_test=if test "${grub}" = "y"; then\
     setenv bootway bootgrub\
+  else\
+    setenv bootway bootextlinux\
 fi
 
 boot_init=setenv boot_device 'mmc 1';run ${bootway};setenv boot_device 'mmc 0';run ${bootway};setenv boot_device 'usb 0';run ${bootway};setenv boot_device 'nvme 0';run ${bootway};setenv boot_device 'sata 0';run ${bootway};setenv boot_device 'sata 1';run ${bootway};
