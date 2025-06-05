@@ -1,5 +1,0 @@
-bootgrub=load ${boot_device}:1 $kernel_addr_r /EFI/fedora/grubriscv64.efi;load ${boot_device}:2 $fdt_addr_r /dtb/${fdtfile};bootefi $kernel_addr_r $fdt_addr_r;
-boot_init=setenv boot_device 'mmc 1';run bootgrub;setenv boot_device 'mmc 0';run bootgrub;setenv boot_device 'usb 0';run bootgrub;setenv boot_device 'nvme 0';run bootgrub;setenv boot_device 'sata 0';run bootgrub;setenv boot_device 'sata 1';run bootgrub;
-
-bootcmd=run boot_init;
-fdtfile=eswin/eic7700-hifive-premier-p550.dtb
